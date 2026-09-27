@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { AppCredit } from "@/components/app-credit"
 import { BrandMark } from "@/components/brand-mark"
 import { CatalogEditor } from "@/components/catalog-editor"
+import { CsvImportCard } from "@/components/csv-import-card"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { PageHeader, PageSkeleton, PageStack } from "@/components/page-header"
 import { useTheme } from "@/components/theme-provider"
@@ -253,12 +254,14 @@ export function SettingsPage() {
           )
         }
       />
+      <CsvImportCard />
       <Card>
         <CardHeader>
           <CardTitle>Dados</CardTitle>
           <CardDescription>
-            Tudo fica no IndexedDB deste navegador. Exporte o JSON para levar a
-            outro computador. Importar não envia nada para servidor.
+            Cópia completa deste navegador. O CSV acima serve para histórico.
+            Este JSON leva bancos, pessoas, tipos, contas, aplicações e valores
+            para outro computador. Importar não envia nada para servidor.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
