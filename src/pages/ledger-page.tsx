@@ -1,7 +1,7 @@
 import * as React from "react"
 import { useLiveQuery } from "dexie-react-hooks"
-import { MoreHorizontalIcon, PlusIcon } from "lucide-react"
-import { useSearchParams } from "react-router"
+import { MoreHorizontalIcon, PlusIcon, Rows3Icon } from "lucide-react"
+import { Link, useSearchParams } from "react-router"
 import { toast } from "sonner"
 
 import { useCreate } from "@/components/create-provider"
@@ -208,14 +208,24 @@ export function LedgerPage({ kind }: { kind: Kind }) {
             : "Dia, tipo, cliente, valor e o banco em que o dinheiro entrou."
         }
         actions={
-          <Button
-            onClick={() =>
-              openCreate(kind === "payable" ? "payable" : "receivable")
-            }
-          >
-            <PlusIcon data-icon="inline-start" />
-            Novo
-          </Button>
+          <>
+            <Button variant="outline" asChild>
+              <Link
+                to={kind === "payable" ? "/pagar/rapido" : "/receber/rapido"}
+              >
+                <Rows3Icon data-icon="inline-start" />
+                Rápido
+              </Link>
+            </Button>
+            <Button
+              onClick={() =>
+                openCreate(kind === "payable" ? "payable" : "receivable")
+              }
+            >
+              <PlusIcon data-icon="inline-start" />
+              Novo
+            </Button>
+          </>
         }
       />
       <div className="flex flex-wrap items-center gap-2">

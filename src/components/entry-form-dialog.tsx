@@ -32,6 +32,7 @@ import {
   nowIso,
   todayIso,
 } from "@/lib/dates"
+import { normalizeName } from "@/lib/csv"
 import { payablePlan, receivablePlan, splitAmount } from "@/lib/installments"
 import { formatMoney, moneyToInput, parseMoneyInput } from "@/lib/money"
 import type { Payable, Receivable } from "@/lib/schema"
@@ -181,8 +182,14 @@ function EntryForm({
     })
   }
 
-  async function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    const native = event.nativeEvent
+    const submitter = native instanceof SubmitEvent ? native.submitter : null
+    const again =
+      !entry &&
+      submitter instanceof HTMLButtonElement &&
+      submitter.name === "again"
     const name = draft.name.trim()
     const amount = parseMoneyInput(draft.amount)
     const installments = entry ? 1 : Number(draft.installments)
@@ -301,6 +308,20 @@ function EntryForm({
           : "Conta a receber lançada."
       )
     }
+    if (again && installments === 1) {
+      setDraft((current) => ({
+        ...current,
+        name: "",
+        partyId: null,
+        amount: "",
+        invoiceNumber: "",
+        notes: "",
+      }))
+      requestAnimationFrame(() => {
+        document.getElementById("entry-name")?.focus()
+      })
+      return
+    }
     onOpenChange(false)
   }
 
@@ -380,12 +401,28 @@ function EntryForm({
           <Input
             id="entry-name"
             value={draft.name}
-            onChange={(event) =>
-              setDraft((current) => ({ ...current, name: event.target.value }))
-            }
+            list="entry-party-names"
+            autoComplete="off"
+            onChange={(event) => {
+              const name = event.target.value
+              setDraft((current) => {
+                const match = parties.find(
+                  (party) => normalizeName(party.name) === normalizeName(name)
+                )
+                if (match && !current.partyId) {
+                  return { ...current, name, partyId: match.id }
+                }
+                return { ...current, name }
+              })
+            }}
             placeholder={payable ? "Ex.: CEMIG ou Aluguel" : "Ex.: Ana Lima"}
             required
           />
+          <datalist id="entry-party-names">
+            {parties.map((party) => (
+              <option key={party.id} value={party.name} />
+            ))}
+          </datalist>
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field>
@@ -527,6 +564,11 @@ function EntryForm({
         </Field>
       </FieldGroup>
       <DialogFooter>
+        {!entry && Number(draft.installments) === 1 ? (
+          <Button type="submit" name="again" variant="outline">
+            Lançar e próxima
+          </Button>
+        ) : null}
         <Button type="submit">{entry ? "Salvar" : "Lançar"}</Button>
       </DialogFooter>
     </form>

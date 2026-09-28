@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { BankFormDialog } from "@/components/bank-form-dialog"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { EntityEmpty } from "@/components/entity-empty"
+import { MergeDialog } from "@/components/merge-dialog"
 import { PageHeader, PageSkeleton, PageStack } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { db } from "@/lib/db"
+import { mergeBanks } from "@/lib/merge"
 import type { Bank } from "@/lib/schema"
 
 export function BanksPage() {
@@ -27,6 +29,7 @@ export function BanksPage() {
   const [editing, setEditing] = React.useState<Bank | null>(null)
   const [creating, setCreating] = React.useState(false)
   const [pending, setPending] = React.useState<Bank | null>(null)
+  const [merging, setMerging] = React.useState<Bank | null>(null)
 
   if (!banks) {
     return <PageSkeleton />
@@ -119,6 +122,13 @@ export function BanksPage() {
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => setMerging(bank)}
+                    >
+                      Unificar
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setPending(bank)}
                     >
                       Excluir
@@ -140,6 +150,31 @@ export function BanksPage() {
           }
         }}
       />
+      {merging ? (
+        <MergeDialog
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              setMerging(null)
+            }
+          }}
+          title={`Unificar ${merging.name}`}
+          description={`Apaga ${merging.name} e passa pagamentos, recebimentos e aplicações para o banco que ficar.`}
+          emptyHint="Cadastre o outro banco antes."
+          options={banks
+            .filter((bank) => bank.id !== merging.id)
+            .map((bank) => ({ id: bank.id, name: bank.name }))}
+          onConfirm={async (targetId) => {
+            const result = await mergeBanks(merging.id, targetId)
+            toast.success(
+              result.moved === 0
+                ? "Banco unificado."
+                : `Unificado. ${result.moved} ${result.moved === 1 ? "vínculo movido" : "vínculos movidos"}.`
+            )
+            setMerging(null)
+          }}
+        />
+      ) : null}
       <ConfirmDialog
         open={pending != null}
         onOpenChange={(open) => {

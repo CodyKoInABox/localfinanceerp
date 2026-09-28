@@ -23,6 +23,16 @@ Abra o app, ou em **Configurações → Carregar exemplo** para um conjunto de d
 
 Nada sai do navegador, exceto o JSON ou o CSV que você baixa.
 
+## Lançamento rápido
+
+Em **A pagar** ou **A receber**, **Rápido** abre uma grade. Tab muda de célula, Enter desce para o nome da próxima linha, Ctrl+Enter (Cmd no Mac) grava o lote. Cole uma tabela: com cabeçalho (`nome`, `valor`, `nf`, `dia`…) ou na ordem das colunas a partir da célula focada. Na grade, colar `100` ou `100,00` entra `100,00`. A grade fica neste navegador até lançar ou limpar.
+
+No campo de valor, digitar é em centavos: `100` vira `1,00`, `10000` vira `100,00`. Colar `100,00` ou `2.800,00` no formulário entra como valor cheio. No formulário de uma conta, **Lançar e próxima** guarda dia, tipo, banco e pago/recebido.
+
+## Unificar cadastro
+
+Em fornecedores, clientes ou bancos, **Unificar** apaga o duplicado e move as contas (e as aplicações, no banco) para o cadastro que fica. O nome escrito na conta não muda; o resumo passa a agrupar pelo cadastro que ficou. Documento, e-mail e telefone vazios no que fica são preenchidos com o do que sai.
+
 ## Exportar / importar JSON
 
 **Configurações → Dados**

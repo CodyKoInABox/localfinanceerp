@@ -8,6 +8,7 @@ import {
   LandmarkIcon,
   PieChartIcon,
   PlusIcon,
+  Rows3Icon,
   SettingsIcon,
   TrendingUpIcon,
   UsersIcon,
@@ -108,9 +109,17 @@ export function CommandPalette({
               <PlusIcon />
               Conta a pagar
             </CommandItem>
+            <CommandItem onSelect={() => go("/pagar/rapido")}>
+              <Rows3Icon />
+              Várias contas a pagar
+            </CommandItem>
             <CommandItem onSelect={() => create("receivable")}>
               <PlusIcon />
               Conta a receber
+            </CommandItem>
+            <CommandItem onSelect={() => go("/receber/rapido")}>
+              <Rows3Icon />
+              Várias contas a receber
             </CommandItem>
             <CommandItem onSelect={() => create("investment")}>
               <PlusIcon />
