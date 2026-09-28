@@ -44,6 +44,61 @@ export function moneyToInput(amount: number): string {
   })
 }
 
+const MAX_MONEY_DIGITS = 13
+
+export function formatCentsDigits(digits: string): string {
+  const cleaned = digits
+    .replace(/\D/g, "")
+    .replace(/^0+/, "")
+    .slice(0, MAX_MONEY_DIGITS)
+  if (!cleaned) {
+    return ""
+  }
+  return (Number(cleaned) / 100).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
+export function moneyDigits(raw: string): string {
+  if (raw.trim() === "") {
+    return ""
+  }
+  const parsed = parseMoneyInput(raw)
+  if (parsed == null || parsed <= 0) {
+    return ""
+  }
+  return String(Math.round(parsed * 100))
+}
+
+export function pushMoneyDigit(
+  current: string,
+  digit: string,
+  replace = false
+): string {
+  const base = replace ? "" : moneyDigits(current)
+  return formatCentsDigits(`${base}${digit}`)
+}
+
+export function popMoneyDigit(current: string): string {
+  return formatCentsDigits(moneyDigits(current).slice(0, -1))
+}
+
+export function moneyFromClipboard(text: string): string {
+  const trimmed = text.trim()
+  if (trimmed === "") {
+    return ""
+  }
+  if (/[,.]/.test(trimmed) || /r\$/i.test(trimmed)) {
+    const parsed = parseMoneyInput(trimmed)
+    if (parsed == null || parsed < 0) {
+      return ""
+    }
+    return formatCentsDigits(String(Math.round(parsed * 100)))
+  }
+  return formatCentsDigits(trimmed)
+}
+
 export function roundMoney(value: number): number {
   return Math.round(value * 100) / 100
 }

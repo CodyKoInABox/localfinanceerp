@@ -6,6 +6,7 @@ import { toast } from "sonner"
 
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { EntityEmpty } from "@/components/entity-empty"
+import { MergeDialog } from "@/components/merge-dialog"
 import { PageHeader, PageSkeleton, PageStack } from "@/components/page-header"
 import { PartyFormDialog } from "@/components/party-form-dialog"
 import { Button } from "@/components/ui/button"
@@ -19,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { db } from "@/lib/db"
+import { mergeParties } from "@/lib/merge"
 import type { Party, PartyRole } from "@/lib/schema"
 
 export function PartiesPage({ role }: { role: PartyRole }) {
@@ -29,6 +31,7 @@ export function PartiesPage({ role }: { role: PartyRole }) {
   const [editing, setEditing] = React.useState<Party | null>(null)
   const [creating, setCreating] = React.useState(false)
   const [pending, setPending] = React.useState<Party | null>(null)
+  const [merging, setMerging] = React.useState<Party | null>(null)
 
   if (!parties) {
     return <PageSkeleton />
@@ -142,6 +145,13 @@ export function PartiesPage({ role }: { role: PartyRole }) {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => setMerging(party)}
+                      >
+                        Unificar
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setPending(party)}
                       >
                         Excluir
@@ -165,6 +175,38 @@ export function PartiesPage({ role }: { role: PartyRole }) {
           }
         }}
       />
+      {merging ? (
+        <MergeDialog
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              setMerging(null)
+            }
+          }}
+          title={`Unificar ${merging.name}`}
+          description={`Apaga ${merging.name} e move as contas para o cadastro que ficar. O texto escrito em cada conta não muda.`}
+          emptyHint={
+            supplier
+              ? "Cadastre o outro fornecedor antes."
+              : "Cadastre o outro cliente antes."
+          }
+          options={parties
+            .filter(
+              (party) => party.id !== merging.id && party.roles.includes(role)
+            )
+            .map((party) => ({ id: party.id, name: party.name }))}
+          onConfirm={async (targetId) => {
+            const result = await mergeParties(merging.id, targetId)
+            const moved = result.payables + result.receivables
+            toast.success(
+              moved === 0
+                ? "Cadastro unificado."
+                : `Unificado. ${moved} ${moved === 1 ? "conta movida" : "contas movidas"}.`
+            )
+            setMerging(null)
+          }}
+        />
+      ) : null}
       <ConfirmDialog
         open={pending != null}
         onOpenChange={(open) => {

@@ -13,6 +13,7 @@ import { InvestmentsPage } from "@/pages/investments-page"
 import { LedgerPage } from "@/pages/ledger-page"
 import { NotFoundPage } from "@/pages/not-found-page"
 import { PartiesPage } from "@/pages/parties-page"
+import { QuickEntryPage } from "@/pages/quick-entry-page"
 import { ReportsPage } from "@/pages/reports-page"
 import { SettingsPage } from "@/pages/settings-page"
 
@@ -32,8 +33,16 @@ export function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/pagar" element={<LedgerPage kind="payable" />} />
               <Route
+                path="/pagar/rapido"
+                element={<QuickEntryPage kind="payable" />}
+              />
+              <Route
                 path="/receber"
                 element={<LedgerPage kind="receivable" />}
+              />
+              <Route
+                path="/receber/rapido"
+                element={<QuickEntryPage kind="receivable" />}
               />
               <Route path="/investimentos" element={<InvestmentsPage />} />
               <Route

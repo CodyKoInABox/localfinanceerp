@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import type { ComponentProps, ReactNode } from "react"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
@@ -34,11 +34,13 @@ export function PageHeader({
 export function PageStack({
   children,
   className,
-}: {
-  children: ReactNode
-  className?: string
-}) {
-  return <div className={cn("flex flex-col gap-6", className)}>{children}</div>
+  ...props
+}: ComponentProps<"div">) {
+  return (
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      {children}
+    </div>
+  )
 }
 
 export function PageSkeleton() {
